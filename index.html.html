@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MAPS Bird Records — Sprint 4 Prototype</title>
+<style>
+:root{--navy:#102a43;--blue:#24577a;--pale:#eaf2f8;--bg:#f4f7fa;--ink:#243b53;--muted:#627d98;--line:#d9e2ec;--white:#fff;--green:#18794e;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--ink)}
+header{background:var(--navy);color:white;padding:18px max(18px,calc((100% - 1180px)/2));display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header strong{font-size:20px;letter-spacing:.3px}header span{font-size:13px;color:#d9eaf7}
+nav{background:white;border-bottom:1px solid var(--line);display:flex;gap:6px;padding:8px max(12px,calc((100% - 1180px)/2));overflow:auto}
+nav button{white-space:nowrap;background:white;color:var(--blue);border:1px solid transparent;padding:10px 13px;border-radius:8px;font-weight:650;cursor:pointer}
+nav button.active,nav button:hover{background:var(--pale);border-color:#b7d3e6}
+main{max-width:1180px;margin:24px auto;padding:0 18px}.page{display:none}.page.active{display:block}
+h1{font-size:25px;color:var(--navy);margin:0 0 6px}h2{font-size:18px;color:var(--navy);margin:0 0 12px}
+.sub{color:var(--muted);margin:0 0 20px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:white;border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:0 2px 6px #102a430b;margin-bottom:14px}
+.stat{font-size:30px;font-weight:750;color:var(--navy);margin:4px 0}.small{font-size:13px;color:var(--muted)}
+button.primary{background:var(--blue);color:white;border:0;border-radius:8px;padding:10px 15px;font-weight:650;cursor:pointer}
+button.secondary{background:white;color:var(--blue);border:1px solid #9fb3c8;border-radius:8px;padding:9px 13px;font-weight:650;cursor:pointer}
+button:focus,input:focus,select:focus,textarea:focus{outline:3px solid #7cc4f2;outline-offset:2px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+form .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+label{display:block;font-weight:650;font-size:13px;margin-bottom:5px}input,select,textarea{width:100%;padding:10px;border:1px solid #9fb3c8;border-radius:7px;background:white;color:var(--ink);font:inherit}
+.field.full{grid-column:1/-1}.hint{font-size:12px;color:var(--muted);margin-top:4px}
+.notice{padding:11px 13px;border-radius:8px;background:#e8f4fd;border:1px solid #b7d3e6;margin:12px 0}
+.error{background:#fff0ef;border:1px solid #f2b8b5;color:var(--red);padding:10px;border-radius:8px;margin:10px 0;display:none}
+.success{background:#eaf7ef;border:1px solid #b7dfc5;color:var(--green);padding:10px;border-radius:8px;margin:10px 0;display:none}
+table{width:100%;border-collapse:collapse;background:white}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);font-size:13px}th{background:#f0f4f8;color:var(--navy)}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px}
+.pill{display:inline-block;background:#eaf2f8;border-radius:20px;padding:3px 9px;font-size:12px}
+.bar{height:10px;background:#e5edf4;border-radius:20px;overflow:hidden;margin:6px 0 12px}.bar i{display:block;height:100%;background:#397da5;border-radius:20px}
+.empty{text-align:center;padding:28px;color:var(--muted)}
+@media(max-width:760px){main{margin:16px auto}.grid{grid-template-columns:1fr}.form .fields,form .fields{grid-template-columns:1fr}.field.full{grid-column:auto}header{padding:15px 18px}}
+</style></head><body>
+<header><div><strong>MAPS</strong><br><span>Bird Banding Data System</span></div><span>SPRING FIELD SEASON • 13 NETS • 8 COLLECTION DAYS</span></header>
+<nav aria-label="Main navigation">
+<button class="active" data-page="dashboard">Dashboard</button><button data-page="entry">Enter Bird Record</button><button data-page="records">View Records</button><button data-page="details">Record Details / Edit</button><button data-page="reports">Analysis & Reports</button>
+</nav>
+<main>
+<section id="dashboard" class="page active">
+<h1>Dashboard</h1><p class="sub">Bird-banding activity at a glance. Sample figures are illustrative prototype data.</p>
+<div class="grid">
+<div class="card"><div class="small">Sample records shown</div><div class="stat" id="total">4</div><div class="small">Current prototype dataset</div></div>
+<div class="card"><div class="small">Species represented</div><div class="stat">4</div><div class="small">Illustrative species list</div></div>
+<div class="card"><div class="small">Station nets</div><div class="stat">13</div><div class="small">Net selection is limited to 1–13</div></div></div>
+<div class="card"><h2>Quick actions</h2><p>Start a new field record or locate a previously saved record.</p><div class="actions"><button class="primary" onclick="showPage('entry')">Enter a bird record</button><button class="secondary" onclick="showPage('records')">Search records</button></div></div>
+<div class="card"><h2>Historical year coverage</h2><p>Available historical years: 2016–2023, 2025, and 2026.</p><div class="notice"><strong>2024 — No data collected.</strong> This year is not represented as zero birds.</div></div>
+</section>
+<section id="entry" class="page">
+<h1>Enter Bird Record</h1><p class="sub">Complete the session and bird details, review the information, then save.</p>
+<div class="card"><form id="birdForm"><div class="fields">
+<div class="field"><label for="year">Year *</label><select id="year" required><option value="">Choose year</option><option>2016</option><option>2017</option><option>2018</option><option>2019</option><option>2020</option><option>2021</option><option>2022</option><option>2023</option><option>2025</option><option>2026</option></select></div>
+<div class="field"><label for="date">Collection date *</label><input id="date" type="date" required></div>
+<div class="field"><label for="time">Time *</label><input id="time" type="time" required></div>
+<div class="field"><label for="net">Net *</label><select id="net" required><option value="">Choose net</option></select></div>
+<div class="field"><label for="species">Species *</label><input id="species" required placeholder="e.g., American Robin"></div>
+<div class="field"><label for="code">Species code</label><input id="code" placeholder="Approved code, if available"></div>
+<div class="field"><label for="band">Band number</label><input id="band" placeholder="Enter band number"></div>
+<div class="field"><label for="bandSize">Band size</label><input id="bandSize" placeholder="Enter band size"></div>
+<div class="field"><label for="age">Age</label><select id="age"><option value="">Select age</option><option>Adult</option><option>Hatch-year</option><option>After-hatch-year</option><option>Unknown</option></select></div>
+<div class="field"><label for="sex">Sex</label><select id="sex"><option value="">Select sex</option><option>Male</option><option>Female</option><option>Unknown</option></select></div>
+<div class="field"><label for="wing">Wing measurement (mm)</label><input id="wing" type="number" min="0" step="0.1"></div>
+<div class="field"><label for="mass">Mass (g)</label><input id="mass" type="number" min="0" step="0.1"></div>
+<div class="field"><label for="status">Banding status</label><select id="status"><option>New band</option><option>Recapture</option><option>Unbanded / no band</option></select></div>
+<div class="field"><label for="notes">Observation notes</label><input id="notes" placeholder="Optional notes"></div>
+</div><p class="hint">* Required in this prototype. Confirm final required fields and measurement limits with the approved data model.</p>
+<div id="formError" class="error" role="alert"></div><div id="formSuccess" class="success" role="status"></div>
+<div class="actions"><button type="button" class="secondary" onclick="reviewRecord()">Review record</button><button type="submit" class="primary">Save record</button></div>
+<div id="review" class="notice" style="display:none" aria-live="polite"></div></form></div>
+</section>
+<section id="records" class="page">
+<h1>View & Search Records</h1><p class="sub">Search by band number or narrow results with filters.</p>
+<div class="card"><div class="fields">
+<div class="field"><label for="query">Search band number, species, or record ID</label><input id="query" placeholder="Type to search"></div>
+<div class="field"><label for="filterYear">Year</label><select id="filterYear"><option value="">All available years</option><option>2016</option><option>2017</option><option>2018</option><option>2019</option><option>2020</option><option>2021</option><option>2022</option><option>2023</option><option>2025</option><option>2026</option></select></div>
+<div class="field"><label for="filterSpecies">Species</label><input id="filterSpecies" placeholder="Species name"></div>
+<div class="field"><label for="filterNet">Net</label><select id="filterNet"><option value="">All nets</option></select></div>
+</div><div class="actions"><button class="primary" onclick="renderRecords()">Apply filters</button><button class="secondary" onclick="clearFilters()">Clear all</button></div></div>
+<div class="card"><div id="resultCount" class="small"></div><div class="table-wrap"><table><thead><tr><th>Record ID</th><th>Date</th><th>Species</th><th>Band number</th><th>Net</th><th>Status</th><th></th></tr></thead><tbody id="recordRows"></tbody></table></div><div id="empty" class="empty" style="display:none">No records found. Try changing your search or clearing filters.</div></div>
+</section>
+<section id="details" class="page">
+<h1>Record Details</h1><p class="sub">Review a selected record and open the edit form.</p>
+<div class="card" id="detailCard"><p>Select a record from View Records to see its details.</p></div>
+</section>
+<section id="reports" class="page">
+<h1>Analysis & Reports</h1><p class="sub">Example report concepts; displayed values are illustrative, not actual MAPS results.</p>
+<div class="grid">
+<div class="card"><h2>Records by collection day</h2><p class="small">Example distribution across the 8-day collection period</p>
+<div>Day 1 <div class="bar"><i style="width:65%"></i></div></div><div>Day 2 <div class="bar"><i style="width:80%"></i></div></div><div>Day 3 <div class="bar"><i style="width:45%"></i></div></div><div>Day 4 <div class="bar"><i style="width:90%"></i></div></div></div>
+<div class="card"><h2>Most common species</h2><p class="small">Illustrative sample records</p><p>American Robin <span class="pill">2</span></p><p>Song Sparrow <span class="pill">1</span></p><p>Downy Woodpecker <span class="pill">1</span></p></div>
+<div class="card"><h2>Records by net</h2><p class="small">Illustrative distribution</p><p>Net 1 <span class="pill">2</span></p><p>Net 4 <span class="pill">1</span></p><p>Net 7 <span class="pill">1</span></p></div></div>
+<div class="notice"><strong>Historical comparison rule:</strong> 2024 must be displayed as “No data collected” if shown in a year timeline. Do not plot it as zero birds or include it in zero-value calculations.</div>
+</section>
+</main>
+<script>
+let records=[
+{id:"MAPS-001",year:"2026",date:"2026-05-03",time:"06:42",species:"American Robin",code:"AMRO",band:"1234-56789",net:"1",status:"New band",age:"Adult",sex:"Unknown",wing:"112.0",mass:"78.4",notes:"Sample record"},
+{id:"MAPS-002",year:"2026",date:"2026-05-03",time:"07:10",species:"Song Sparrow",code:"SOSP",band:"9876-54321",net:"4",status:"Recapture",age:"After-hatch-year",sex:"Male",wing:"65.2",mass:"19.1",notes:"Sample record"},
+{id:"MAPS-003",year:"2025",date:"2025-05-05",time:"06:55",species:"Downy Woodpecker",code:"DOWO",band:"",net:"7",status:"Unbanded / no band",age:"Unknown",sex:"Unknown",wing:"",mass:"",notes:"Sample record"},
+{id:"MAPS-004",year:"2023",date:"2023-05-02",time:"07:22",species:"American Robin",code:"AMRO",band:"1111-22222",net:"1",status:"Recapture",age:"Adult",sex:"Female",wing:"110.5",mass:"76.8",notes:"Sample record"}
+];
+let selectedId=null;
+for(let i=1;i<=13;i++){document.getElementById('net').add(new Option('Net '+i,String(i)));document.getElementById('filterNet').add(new Option('Net '+i,String(i)))}
+document.querySelectorAll('nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));if(id==='records')renderRecords()}
+function reviewRecord(){let f=document.getElementById('birdForm');if(!f.reportValidity())return;let vals=['year','date','time','net','species','band','status'];let html='<strong>Review before saving</strong><ul>'+vals.map(k=>'<li>'+k+': '+(document.getElementById(k)?.value||'—')+'</li>').join('')+'</ul>';document.getElementById('review').innerHTML=html;document.getElementById('review').style.display='block'}
+document.getElementById('birdForm').addEventListener('submit',e=>{e.preventDefault();let f=e.target;if(!f.reportValidity())return;let year=document.getElementById('year').value;if(year==='2024'){showError('2024 is not an available collection year because no data was collected.');return}
+let r={id:'MAPS-'+String(records.length+1).padStart(3,'0'),year,date:document.getElementById('date').value,time:document.getElementById('time').value,species:document.getElementById('species').value,code:document.getElementById('code').value,band:document.getElementById('band').value,net:document.getElementById('net').value,status:document.getElementById('status').value,age:document.getElementById('age').value,sex:document.getElementById('sex').value,wing:document.getElementById('wing').value,mass:document.getElementById('mass').value,notes:document.getElementById('notes').value};
+records.unshift(r);document.getElementById('total').textContent=records.length;document.getElementById('formSuccess').textContent='Record '+r.id+' saved in this prototype session.';document.getElementById('formSuccess').style.display='block';document.getElementById('formError').style.display='none';selectedId=r.id;showDetails(r);});
+function showError(m){let e=document.getElementById('formError');e.textContent=m;e.style.display='block'}
+function renderRecords(){let q=document.getElementById('query').value.toLowerCase(),y=document.getElementById('filterYear').value,s=document.getElementById('filterSpecies').value.toLowerCase(),n=document.getElementById('filterNet').value;
+let found=records.filter(r=>(!q||[r.id,r.band,r.species].join(' ').toLowerCase().includes(q))&&(!y||r.year===y)&&(!s||r.species.toLowerCase().includes(s))&&(!n||r.net===n));
+document.getElementById('resultCount').textContent=found.length+' matching record(s)';document.getElementById('recordRows').innerHTML=found.map(r=>`<tr><td>${r.id}</td><td>${r.date}</td><td>${r.species}</td><td>${r.band||'—'}</td><td>${r.net}</td><td>${r.status}</td><td><button class="secondary" onclick="openRecord('${r.id}')">Open</button></td></tr>`).join('');document.getElementById('empty').style.display=found.length?'none':'block'}
+function clearFilters(){['query','filterYear','filterSpecies','filterNet'].forEach(id=>document.getElementById(id).value='');renderRecords()}
+function openRecord(id){selectedId=id;let r=records.find(x=>x.id===id);showDetails(r);showPage('details')}
+function showDetails(r){document.getElementById('detailCard').innerHTML=`<h2>${r.id} — ${r.species}</h2><p><span class="pill">${r.status}</span></p><div class="grid">${[['Year',r.year],['Date',r.date],['Time',r.time],['Net',r.net],['Band number',r.band||'—'],['Species code',r.code||'—'],['Age',r.age||'—'],['Sex',r.sex||'—'],['Wing (mm)',r.wing||'—'],['Mass (g)',r.mass||'—'],['Notes',r.notes||'—']].map(([a,b])=>`<div><div class="small">${a}</div><strong>${b}</strong></div>`).join('')}</div><div class="actions"><button class="primary" onclick="editRecord()">Edit record</button><button class="secondary" onclick="showPage('records')">Back to results</button></div>`}
+function editRecord(){let r=records.find(x=>x.id===selectedId);showPage('entry');for(let k of ['year','date','time','net','species','code','band','age','sex','wing','mass','status','notes'])if(document.getElementById(k))document.getElementById(k).value=r[k]||'';document.getElementById('birdForm').onsubmit=function(e){e.preventDefault();let f=e.target;if(!f.reportValidity())return;for(let k of ['year','date','time','net','species','code','band','age','sex','wing','mass','status','notes'])r[k]=document.getElementById(k).value;document.getElementById('formSuccess').textContent='Changes saved for '+r.id+' in this prototype session.';document.getElementById('formSuccess').style.display='block';showDetails(r);showPage('details');document.getElementById('birdForm').onsubmit=null}}
+renderRecords();
+</script></body></html>
